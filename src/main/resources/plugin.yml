@@ -1,0 +1,8 @@
+name: DPluginLibrary
+version: '${project.version}'
+main: ru.dest.library.PluginLibrary
+api-version: 1.16
+authors: [ DestKoder ]
+softdepend:
+  - Vault
+website: https://github.com/DestKoder/PluginLibrary.git
