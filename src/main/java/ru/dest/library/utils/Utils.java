@@ -2,12 +2,16 @@ package ru.dest.library.utils;
 
 import org.bukkit.Color;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * Some utils for coding
@@ -22,13 +26,15 @@ public final class Utils {
      * @param hex {@link String} with hex code (#000000)
      * @return the resulting {@link Color}
      */
-    public static Color getColorFromHexString(String hex){
+    @Contract("_ -> new")
+    public static @NotNull Color getColorFromHexString(@NotNull String hex){
         return Color.fromRGB(Integer.valueOf( hex.substring( 1, 3 ), 16 ),
                 Integer.valueOf( hex.substring( 3, 5 ), 16 ),
                 Integer.valueOf( hex.substring( 5, 7 ), 16 ));
     }
 
-    public static Color forRGB(int r, int g, int b){
+    @Contract(value = "_, _, _ -> new", pure = true)
+    public static @NotNull Color forRGB(int r, int g, int b){
         return Color.fromRGB(r,g,b);
     }
     /**
@@ -36,7 +42,8 @@ public final class Utils {
      * @param args - array of strings
      * @return resulting string
      */
-    public static String argsToMessage(String[] args){
+    @NotNull
+    public static String argsToMessage(String @NotNull [] args){
         StringBuilder sb = new StringBuilder();
 
         for (String arg : args) {
@@ -53,7 +60,7 @@ public final class Utils {
      * @param startPos - number of the element from which need start
      * @return resulting string
      */
-    public static String argsToMessage(String[] args, int startPos){
+    public static @NotNull String argsToMessage(String @NotNull [] args, int startPos){
         StringBuilder sb = new StringBuilder();
 
         for(int i =startPos ;i < args.length; i ++){
@@ -77,8 +84,20 @@ public final class Utils {
      * @param permission permission to check
      * @param function methods which will execute
      */
-    public static void executeIfHas(Player player, String permission, Consumer<Player> function){
+    public static void executeIfHas(@NotNull Player player,@NotNull String permission,@NotNull Consumer<Player> function){
         if(player.hasPermission(permission)) function.accept(player);
+    }
+
+    public static <T> void executeIf(@NotNull T t,@NotNull Consumer<T> c, @NotNull Predicate<T> p){
+        if(p.test(t)){
+            c.accept(t);
+        }
+    }
+
+    public static <T> void forEachIf(@NotNull Collection<T> collection, @NotNull Consumer<T> c, @NotNull Predicate<T> p){
+        for(T t : collection){
+            executeIf(t, c, p);
+        }
     }
 
     /**
@@ -94,12 +113,13 @@ public final class Utils {
         }else return expires - current;
     }
 
+    @Contract(pure = true)
     @SafeVarargs
-    public static <T> List<T> newList(T... values){
+    public static <T> @NotNull List<T> newList(T... values){
         return Arrays.asList(values);
     }
 
-    public static void fillStatement(PreparedStatement stmt, Object[] data) throws SQLException {
+    public static void fillStatement(PreparedStatement stmt, Object @NotNull [] data) throws SQLException {
         for(int index = 0; index < data.length; index++){
             stmt.setObject(index+1, data[index]);
         }

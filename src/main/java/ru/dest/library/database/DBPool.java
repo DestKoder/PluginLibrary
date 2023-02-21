@@ -44,4 +44,13 @@ public class DBPool {
         }
     }
 
+    public void closeAll() throws SQLException {
+        for(Connection conn : used) putback(conn);
+
+        for(Connection connection : available) {
+            connection.close();
+        }
+
+        available.clear();
+    }
 }

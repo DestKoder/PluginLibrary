@@ -9,10 +9,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import ru.dest.library.object.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Some utils for working with chat, sending message in it
@@ -22,6 +25,7 @@ import java.util.List;
 public final class ChatUtils {
 
     private static boolean hookPlaceholder;
+    private static final Pattern HEX_PATTERN = Pattern.compile("(&#[0-9a-fA-F]{6})");
 
     static {
         hookPlaceholder = Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null;
@@ -32,8 +36,20 @@ public final class ChatUtils {
      * @param s - string for parse
      * @return parsed string
      */
+    @NotNull
     public static String parse(String s){
-        return ChatColor.translateAlternateColorCodes('&', s);
+
+        Matcher matcher = HEX_PATTERN.matcher(s);
+        StringBuffer sb = new StringBuffer();
+        while (matcher.find()) {
+            String hex = matcher.group(1).substring(1);
+            matcher.appendReplacement(sb, "" + ChatColor.of(hex));
+        }
+        matcher.appendTail(sb);
+
+        String hexColored = sb.toString();
+
+        return ChatColor.translateAlternateColorCodes('&', hexColored);
     }
 
     /**
@@ -41,6 +57,7 @@ public final class ChatUtils {
      * @param l - string list for parse
      * @return return parsed string list
      */
+    @NotNull
     public static List<String> parse(List<String> l){
         List<String> toReturn = new ArrayList<>();
 
@@ -70,7 +87,8 @@ public final class ChatUtils {
      * @param format {@link List<Pair<String,String>} list of format keys & values
      * @return formatted message
      */
-    public static String formatMessage(String message, List<Pair<String, String>> format){
+    @NotNull
+    public static String formatMessage(@NotNull String message,@NotNull  List<Pair<String, String>> format){
 
         for(Pair<String, String> pair : format){
             message = message.replaceAll("\\{"+ pair.getFirstVal()+"}", pair.getSecondVal());
@@ -84,7 +102,7 @@ public final class ChatUtils {
      * @param sendFor {@link CommandSender} to whom the message will be sent
      * @param message {@link String} message which will be sended;
      */
-    public static void sendMessage(CommandSender sendFor, String message){
+    public static void sendMessage(@NotNull CommandSender sendFor,@NotNull String message){
         sendFor.sendMessage(parse(message).split("\n"));
     }
 
@@ -121,6 +139,7 @@ public final class ChatUtils {
      * @param message {@link BaseComponent} basecompontent-message which will be sended; Support HoverEffects, ClickableEvent etc.
      * @param pos {@link ChatMessageType} position in which message will be showed
      */
+
     public static void sendMessage(Player sendFor, BaseComponent message, ChatMessageType pos){
         sendFor.spigot().sendMessage(pos, message);
     }
