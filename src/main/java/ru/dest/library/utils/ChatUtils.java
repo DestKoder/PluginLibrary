@@ -58,7 +58,7 @@ public final class ChatUtils {
      * @return return parsed string list
      */
     @NotNull
-    public static List<String> parse(List<String> l){
+    public static List<String> parse(@NotNull List<String> l){
         List<String> toReturn = new ArrayList<>();
 
         l.forEach(s -> toReturn.add(parse(s)));
@@ -111,7 +111,7 @@ public final class ChatUtils {
      * @param sendFor {@link Player} to whom the message will be sent
      * @param message {@link String} message which will be sended;
      */
-    public static void sendMessage(Player sendFor, String message){
+    public static void sendMessage(@NotNull Player sendFor, String message){
         sendFor.sendMessage(parse(message).split("\n"));
     }
 
@@ -120,7 +120,7 @@ public final class ChatUtils {
      * @param sendFor {@link CommandSender} to whom the message will be sent
      * @param message {@link BaseComponent} basecompontent-message which will be sended; Support HoverEffects, ClickableEvent etc.
      */
-    public static void sendMessage(CommandSender sendFor, BaseComponent message){
+    public static void sendMessage(@NotNull CommandSender sendFor, BaseComponent message){
         sendFor.spigot().sendMessage(message);
     }
 
@@ -129,7 +129,7 @@ public final class ChatUtils {
      * @param sendFor {@link Player} to whom the message will be sent
      * @param message {@link BaseComponent} basecompontent-message which will be sended; Support HoverEffects, ClickableEvent etc.
      */
-    public static void sendMessage(Player sendFor, BaseComponent message){
+    public static void sendMessage(@NotNull Player sendFor, BaseComponent message){
         sendFor.spigot().sendMessage(message);
     }
 
@@ -140,7 +140,7 @@ public final class ChatUtils {
      * @param pos {@link ChatMessageType} position in which message will be showed
      */
 
-    public static void sendMessage(Player sendFor, BaseComponent message, ChatMessageType pos){
+    public static void sendMessage(@NotNull Player sendFor, BaseComponent message, ChatMessageType pos){
         sendFor.spigot().sendMessage(pos, message);
     }
 
@@ -150,7 +150,7 @@ public final class ChatUtils {
      * @param message {@link BaseComponent} message which will be sended; Support HoverEffects, ClickableEvent etc.
      * @param pos {@link ChatMessageType} position in which message will be showed
      */
-    public static void sendMessage(Player sendFor, String message, ChatMessageType pos){
+    public static void sendMessage(@NotNull Player sendFor, String message, ChatMessageType pos){
         sendFor.spigot().sendMessage(pos, new TextComponent(parse(message)));
     }
 }

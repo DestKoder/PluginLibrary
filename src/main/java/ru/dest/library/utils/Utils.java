@@ -74,8 +74,9 @@ public final class Utils {
     /**
      * @return the number of seconds elapsed since 1 jan 1970
      */
+    @Deprecated
     public static long getCurrentTimeInSeconds(){
-        return System.currentTimeMillis()/1000;
+        return TimeUtils.getUnixTime();
     }
 
     /**

@@ -39,7 +39,7 @@ public class ConfigUtils {
     @NotNull
     public static Location loadLocation(@NotNull ConfigurationSection section){
 
-        if(!section.isSet("world") || !section.isSet("x") || !section.isSet("y") || !section.isSet("z")) throw new MissingConfigurationException("Invalid location config. One of values (world, x, y, z) is missing");
+        if(!section.isSet("world") || !section.isSet("posX") || !section.isSet("posY") || !section.isSet("posZ")) throw new MissingConfigurationException("Invalid location config. One of values (world, x, y, z) is missing");
 
         World world = Bukkit.getWorld(section.getString("world"));
 
@@ -47,7 +47,7 @@ public class ConfigUtils {
             throw new NullPointerException("Location world doesn't exists!");
         }
 
-        Location location = new Location(world, section.getDouble("x"), section.getDouble("y"), section.getDouble("z"));
+        Location location = new Location(world, section.getDouble("posX"), section.getDouble("posY"), section.getDouble("posZ"));
 
         if(section.isSet("yaw")) location.setYaw((float) section.getDouble("yaw"));
         if(section.isSet("pitch")) location.setPitch((float) section.getDouble("pitch"));

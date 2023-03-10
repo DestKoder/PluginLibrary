@@ -1,17 +1,23 @@
 package ru.dest.library.utils;
 
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.dest.library.exception.InvalidMaterialException;
 
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.UUID;
 
 public class ItemUtils {
 
@@ -20,6 +26,10 @@ public class ItemUtils {
     @Contract("_ -> new")
     @NotNull
     public static ItemStack createByMaterial(@NotNull String material){
+        if(material.startsWith("head:")) {
+            return Objects.requireNonNull(createHead(material.replace("head:", "")));
+        }
+
         material = material.toUpperCase();
         if(!material.contains(":")) {
             Material mat = Material.getMaterial(material);
@@ -42,6 +52,28 @@ public class ItemUtils {
         }
 
         return new ItemStack(mat, Parser.parseInt(data[1]));
+    }
+
+    @Nullable
+    public static ItemStack createHead(String textureId) {
+        ItemStack head = new ItemStack(Material.PLAYER_HEAD);
+        SkullMeta headMeta = (SkullMeta) head.getItemMeta();
+
+        GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+
+        profile.getProperties().put("textures", new Property("textures", textureId));
+
+        try {
+            Field profileField = headMeta.getClass().getDeclaredField("profile");
+            profileField.setAccessible(true);
+            profileField.set(headMeta, profile);
+
+            head.setItemMeta(headMeta);
+            return head;
+        }catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     /**
