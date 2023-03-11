@@ -9,9 +9,11 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.dest.library.exception.InvalidItemDataException;
+import ru.dest.library.utils.ChatUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,7 +58,19 @@ public abstract class GUI implements InventoryHolder {
 
         template.getItems().forEach((slots, item) -> {
             slots.forEach(slot -> {
-                inventory.setItem(slot, item);
+                ItemStack i = item.clone();
+                ItemMeta meta = i.getItemMeta();
+
+                meta.setDisplayName(ChatUtils.applyPlaceholders(meta.getDisplayName(), openFor));
+                List<String> nl = new ArrayList<>();
+
+                for(String s : meta.getLore()){
+                    nl.add(ChatUtils.applyPlaceholders(s, openFor));
+                }
+
+                meta.setLore(nl);
+                i.setItemMeta(meta);
+                inventory.setItem(slot, i);
             });
         });
     }

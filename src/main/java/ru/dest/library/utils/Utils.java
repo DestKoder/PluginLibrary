@@ -1,10 +1,10 @@
 package ru.dest.library.utils;
 
 import org.bukkit.Color;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -124,5 +124,10 @@ public final class Utils {
         for(int index = 0; index < data.length; index++){
             stmt.setObject(index+1, data[index]);
         }
+    }
+
+    @NotNull
+    public Location centralize(@NotNull Location location){
+        return new Location(location.getWorld(), location.getBlockX(), location.getBlockY(), location.getBlockZ()).add(0.5, 0, 0.5);
     }
 }
