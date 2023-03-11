@@ -53,7 +53,7 @@ public class RuntimeManagerCommand<T extends JavaPlugin> extends RuntimeCommand<
     @Nullable
     protected ICommand<T> getCommandByName(@NotNull String name){
         for(ICommand<T> cmd : subCommands){
-            if(cmd.getAliases().contains(name)) return cmd;
+            if(cmd.getAliases().contains(name) ||cmd.getName().equalsIgnoreCase(name)) return cmd;
         }
         return null;
     }

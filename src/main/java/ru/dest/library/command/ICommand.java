@@ -13,4 +13,5 @@ public interface ICommand<T extends JavaPlugin>{
     T getPlugin();
     @NotNull
     List<String> getAliases();
+    String getName();
 }
