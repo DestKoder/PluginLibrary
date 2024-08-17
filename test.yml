@@ -1,0 +1,6 @@
+test:
+  list: [test1, test2]
+lang: en_US
+config: {version: 1}
+entity:
+  type: {val: CAT}
