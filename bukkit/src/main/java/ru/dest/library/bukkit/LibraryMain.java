@@ -15,6 +15,8 @@ import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.scheduler.BukkitTask;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.dest.library.Library;
 import ru.dest.library.bukkit.listener.EventListener;
 import ru.dest.library.bukkit.listener.GUIListener;
@@ -23,6 +25,15 @@ import ru.dest.library.command.argument.ArgumentTypes;
 import ru.dest.library.command.argument.IArgumentType;
 import ru.dest.library.lang.Lang;
 import ru.dest.library.lang.impl.ComponentMessage;
+import ru.dest.library.logging.ILogger;
+import ru.dest.library.module.BukkitModules;
+import ru.dest.library.module.LibraryModules;
+import ru.dest.library.module.economy.EconomyModule;
+import ru.dest.library.module.economy.PlayerPointsEconomy;
+import ru.dest.library.module.economy.VaultEconomy;
+import ru.dest.library.module.permission.LuckPermsPermissions;
+import ru.dest.library.module.permission.PermissionModule;
+import ru.dest.library.module.permission.VaultPermissions;
 import ru.dest.library.plugin.MinecraftPlugin;
 import ru.dest.library.utils.TimeUtils;
 
@@ -33,6 +44,7 @@ import static ru.dest.library.utils.Utils.list;
 
 public class LibraryMain extends MinecraftPlugin<LibraryMain, LibraryConfig> implements Listener {
 
+    private static final Logger log = LoggerFactory.getLogger(LibraryMain.class);
     @Getter
     private static LibraryMain instance;
 
@@ -99,13 +111,49 @@ public class LibraryMain extends MinecraftPlugin<LibraryMain, LibraryConfig> imp
         registry().register(new EventListener(this));
         getServer().getPluginManager().registerEvents(this, this);
 
-
         this.itemId = new NamespacedKey(this, "itemId");
 
+        logger().info("Initializing modules...");
+        initModules();
         instance = this;
 
         startTasks();
     }
+
+    private void initModules(){
+        VaultEconomy vaultEconomy = VaultEconomy.init(getServer());
+        PlayerPointsEconomy ppEconomy = PlayerPointsEconomy.init(getServer());
+
+        PermissionModule vaultPermissions = VaultPermissions.init(getServer());
+        PermissionModule luckPermsPermissions = LuckPermsPermissions.init(getServer());
+
+        if(vaultEconomy != null){
+            LibraryModules.registerModule(BukkitModules.VAULT_ECONOMY, vaultEconomy);
+            logger().info("Initialized economy module: "+ ILogger.GREEN+"Vault");
+        }
+        if(ppEconomy != null){
+            LibraryModules.registerModule(BukkitModules.PLAYER_POINTS, ppEconomy);
+            logger().info("Initialized economy module: "+ ILogger.GREEN+"PlayerPoints");
+        }
+
+        if(luckPermsPermissions != null){
+            LibraryModules.registerModule(BukkitModules.PERMISSION, luckPermsPermissions);
+            logger().info("Initialized permission module: " + ILogger.GREEN + "LuckPerms");
+        }else if(vaultPermissions != null){
+            LibraryModules.registerModule(BukkitModules.PERMISSION, vaultPermissions);
+            logger().info("Initialized permission module: " + ILogger.GREEN + "Vault");
+        }else {
+            logger().warning("Couldn't find any permissions module. Some functional will be disabled before any of plugin register custom permission module.");
+        }
+
+        logger().info("Finished module initialization");
+
+        if(vaultEconomy != null){
+            LibraryModules.registerModule(BukkitModules.DEFAULT_ECONOMY, vaultEconomy);
+            logger().info("Using "+ ILogger.GREEN +"Vault"+ILogger.CYAN+" economy module as default economy provider");
+        }
+    }
+
 
     @EventHandler
     public void onPluginEnable(PluginEnableEvent event){

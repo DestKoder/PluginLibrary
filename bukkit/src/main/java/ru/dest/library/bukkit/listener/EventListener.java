@@ -51,18 +51,18 @@ public class EventListener extends BukkitListener<LibraryMain> {
         event.setCancelled(ev.isCancelled());
     }
 
-    @EventHandler()
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onDamage(@NotNull EntityDamageByEntityEvent event){
         Entity entity = event.getEntity();
         Entity damager = event.getDamager();
 
         if(entity instanceof Player){
             PlayerDamageByEntityEvent ev = new PlayerDamageByEntityEvent(event);
+            plugin.getServer().getPluginManager().callEvent(ev);
+            if(ev.isCancelled())return;
+
             event.setCancelled(ev.isCancelled());
             event.setDamage(ev.getDamage());
-            plugin.getServer().getPluginManager().callEvent(ev);
-
-            if(ev.isCancelled())return;
 
             if(damager instanceof Player){
                 PlayerDamageByPlayerEvent ev1 = new PlayerDamageByPlayerEvent(event);
@@ -71,7 +71,6 @@ public class EventListener extends BukkitListener<LibraryMain> {
                 event.setDamage(ev1.getDamage());
             }
         }
-
     }
 
 }

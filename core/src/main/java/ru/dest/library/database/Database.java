@@ -22,7 +22,7 @@ import java.util.concurrent.CompletableFuture;
  * @author DestKoder
  * @since 1.0
  */
-public abstract class Database {
+public class Database {
 
     private final ConnectionProvider provider;
     private final ILogger logger;

@@ -1,45 +1,64 @@
 package ru.dest.library.dependency;
 
+import io.vavr.control.Option;
 import io.vavr.control.Try;
 import org.apache.commons.io.FileUtils;
-import org.jsoup.Connection;
-import org.jsoup.Jsoup;
 import ru.dest.library.Library;
 
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.*;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.Optional;
 
+/**
+ * Class for working with runtime dependencies
+ *
+ * @since 1.2
+ * @author DestKoder
+ */
 public final class RuntimeDependency {
 
+    /**
+     * Load dependency if not loaded
+     * @param clName Main class of dependency to check if loaded
+     * @param remoteUrl Url for download dependency
+     * @return Optional of {@link URLClassLoader} for loading class...
+     * @throws Exception if any error occupied
+     */
     public static Optional<URLClassLoader> loadIfAbsent(String clName, String remoteUrl) throws Exception {
-        if(isLoaded(clName)) return Optional.empty();
+        if(isLoaded(clName)) return Optional.of((URLClassLoader) Class.forName(clName).getClassLoader());
 
         String[] data = remoteUrl.split("/");
         File localDepFile = new File(Library.get().getFolder(), "libs/" + data[data.length-1] + (data[data.length-1].endsWith(".jar") ? "" : ".jar"));
 
         if(!localDepFile.exists()){
-//            FileUtils.copyURLToFile(new URL(remoteUrl), localDepFile);
-            Connection.Response res = Jsoup.connect(remoteUrl)
-                    .userAgent("PluginLibrary")
-                    .timeout(30000)
-                    .followRedirects(true)
-                    .ignoreContentType(true)
-                    .maxBodySize(Integer.MAX_VALUE)//Increase value if download is more than 20MB
-                    .execute();
-            FileOutputStream out = (new FileOutputStream(localDepFile));
-            out.write( res.bodyAsBytes());
-            out.close();
+            download(remoteUrl, localDepFile);
         }
 
+        return loadJar(localDepFile);
+    }
+
+    public static void download(String url, File to) throws Exception{
+        HttpClient client = HttpClient.newBuilder()
+                .version(HttpClient.Version.HTTP_1_1)
+                .followRedirects(HttpClient.Redirect.ALWAYS)
+                .connectTimeout(Duration.ofSeconds(30000))
+                .build();
+        HttpRequest request = HttpRequest.newBuilder().GET().uri(new URL(url).toURI()).build();
+        HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
+        FileUtils.copyInputStreamToFile(response.body(), to);
+    }
+
+    public static Optional<URLClassLoader> loadJar(File file){
         return Try.ofCallable(() -> new URLClassLoader(new URL[]{
-                localDepFile.toURI().toURL()
+                file.toURI().toURL()
         }, RuntimeDependency.class.getClassLoader())).toJavaOptional();
     }
+
 
     private static boolean isLoaded(String cl){
         try{
