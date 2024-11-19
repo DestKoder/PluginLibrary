@@ -35,7 +35,13 @@ public final class Lang {
         return localization.getOrDefault(key, key);
     }
 
-    public Message getMessage(String key){
+    @Contract(value = "_ -> new", pure = true)
+    public static @NotNull Message make(String s){
+        return new ComponentMessage(s);
+    }
+
+    @Contract("_ -> new")
+    public @NotNull Message getMessage(String key){
         return new ComponentMessage(getValue(key));
     }
 

@@ -27,6 +27,7 @@ public final class DataConfig {
     public Object get(@NotNull String key, Object def){
         Object val = null;
 
+        System.out.println(key);
         if(!key.contains(".")){
             return data.getOrDefault(key, def);
         };

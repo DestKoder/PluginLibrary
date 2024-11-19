@@ -13,7 +13,6 @@ import ru.dest.library.object.ISendAble;
 import ru.dest.library.plugin.PlatformMethods;
 import ru.dest.library.utils.ReflectionUtils;
 
-import java.util.Collections;
 import java.util.List;
 
 import static ru.dest.library.utils.Utils.executeIf;
@@ -69,6 +68,23 @@ public final class BukkitMethods implements PlatformMethods {
         }
 
         throw new IllegalArgumentException("Couldn't save a SendAble with class " + message.getClass() + " to bukkit player");
+    }
+
+    @Override
+    public void kick(Object player, Component component) {
+        if(!(player instanceof  Player)) return;
+        if(LibraryMain.getInstance().getAudienceProvider() != null){
+            ((Player)player).kickPlayer(component.toString());
+            return;
+        }
+
+        try {
+            ReflectionUtils.callMethod(player.getClass(), "kick", new Class[]{Component.class}, player, new Object[]{component});
+        } catch (Exception e) {
+            LibraryMain.getInstance().logger().warning("Couldn't kick player...");
+            LibraryMain.getInstance().logger().error(e);
+        }
+        return;
     }
 
     @Override

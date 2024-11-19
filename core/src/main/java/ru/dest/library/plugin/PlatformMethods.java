@@ -1,5 +1,6 @@
 package ru.dest.library.plugin;
 
+import net.kyori.adventure.text.Component;
 import ru.dest.library.lang.Message;
 import ru.dest.library.object.ISendAble;
 
@@ -16,4 +17,8 @@ public interface PlatformMethods {
     Object getOfflinePlayer(String name);
 
     boolean checkPermission(Object o, String perm);
+
+    void kick(Object player, Component component);
+
+
 }

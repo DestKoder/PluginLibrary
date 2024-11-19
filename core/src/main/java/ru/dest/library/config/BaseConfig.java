@@ -41,6 +41,7 @@ public abstract class BaseConfig {
             FieldType type = f.getType();
             String path = f.getPath();
             Object val = data.get(path);
+//            System.out.println(val);
 
             if(val == null)continue;
             if(type == FieldType.INTEGER){

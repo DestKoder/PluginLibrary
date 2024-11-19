@@ -29,8 +29,8 @@ public final class RuntimeDependency {
      * @return Optional of {@link URLClassLoader} for loading class...
      * @throws Exception if any error occupied
      */
-    public static Optional<URLClassLoader> loadIfAbsent(String clName, String remoteUrl) throws Exception {
-        if(isLoaded(clName)) return Optional.of((URLClassLoader) Class.forName(clName).getClassLoader());
+    public static Optional<ClassLoader> loadIfAbsent(String clName, String remoteUrl) throws Exception {
+        if(isLoaded(clName)) return Optional.of(Class.forName(clName).getClassLoader());
 
         String[] data = remoteUrl.split("/");
         File localDepFile = new File(Library.get().getFolder(), "libs/" + data[data.length-1] + (data[data.length-1].endsWith(".jar") ? "" : ".jar"));
@@ -53,8 +53,8 @@ public final class RuntimeDependency {
         FileUtils.copyInputStreamToFile(response.body(), to);
     }
 
-    public static Optional<URLClassLoader> loadJar(File file){
-        return Try.ofCallable(() -> new URLClassLoader(new URL[]{
+    public static Optional<ClassLoader> loadJar(File file){
+        return Try.ofCallable(() -> (ClassLoader) new URLClassLoader(new URL[]{
                 file.toURI().toURL()
         }, RuntimeDependency.class.getClassLoader())).toJavaOptional();
     }

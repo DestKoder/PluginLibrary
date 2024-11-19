@@ -116,6 +116,7 @@ public abstract class BaseCommand<T extends IPlugin<?>> implements ICommand<T>, 
                 Library.get().getNoPermissionMessage().send(execution.executor());
                 return;
             }
+
         }
 
         //arguments check

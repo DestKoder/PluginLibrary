@@ -1,10 +1,11 @@
 package ru.dest.library.lang;
 
 import org.jetbrains.annotations.NotNull;
+import ru.dest.library.object.ICanBeUsedAsKickReason;
 import ru.dest.library.object.IFormatAble;
 import ru.dest.library.object.ISendAble;
 
-public interface Message extends ISendAble, IFormatAble<Message> {
+public interface Message extends ISendAble, IFormatAble<Message>, ICanBeUsedAsKickReason {
     @NotNull
     Message setHoverText(@NotNull String text);
     @NotNull

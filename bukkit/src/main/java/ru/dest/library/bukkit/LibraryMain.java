@@ -28,7 +28,6 @@ import ru.dest.library.lang.impl.ComponentMessage;
 import ru.dest.library.logging.ILogger;
 import ru.dest.library.module.BukkitModules;
 import ru.dest.library.module.LibraryModules;
-import ru.dest.library.module.economy.EconomyModule;
 import ru.dest.library.module.economy.PlayerPointsEconomy;
 import ru.dest.library.module.economy.VaultEconomy;
 import ru.dest.library.module.permission.LuckPermsPermissions;

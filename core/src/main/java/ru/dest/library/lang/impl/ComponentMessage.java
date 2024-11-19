@@ -26,9 +26,7 @@ public class ComponentMessage implements Message {
     }
 
     public Component build(){
-        Component base;
-//        val = val.replaceAll("\\{nl}", "\n");
-        base = Lang.serializer().deserialize(val).clickEvent(clickEvent).hoverEvent(hoverEvent);
+        Component base = Lang.serializer().deserialize(val).clickEvent(clickEvent).hoverEvent(hoverEvent);
 
         for(ComponentMessage msg : additions){
             base = base.append(msg.build());
@@ -115,5 +113,10 @@ public class ComponentMessage implements Message {
     @Override
     public String raw() {
         return val;
+    }
+
+    @Override
+    public void kick(Object player) {
+        Library.get().getMethods().kick(player, build());
     }
 }

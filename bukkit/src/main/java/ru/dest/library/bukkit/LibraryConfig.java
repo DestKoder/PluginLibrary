@@ -1,6 +1,5 @@
 package ru.dest.library.bukkit;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import ru.dest.library.config.BaseConfig;
 import ru.dest.library.config.ann.ConfigPath;

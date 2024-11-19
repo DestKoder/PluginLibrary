@@ -1,31 +1,41 @@
 package ru.dest.library.event;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
+import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
-public class PlayerDamageByPlayerEvent extends EntityDamageByEntityEvent {
+@Getter
+public class PlayerDamageByPlayerEvent extends Event implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
 
+    private final Player damager;
+    @Setter
+    private double damage;
+    private final Player player;
+
+    @Setter
+    private boolean cancelled;
+
     public PlayerDamageByPlayerEvent(@NotNull EntityDamageByEntityEvent event) {
-        super(event.getDamager(), event.getEntity(), event.getCause(), event.getDamage());
+        this.damager = (Player)event.getDamager();
+        this.cancelled = false;
+        this.damage = event.getDamage();
+        this.player = (Player) event.getEntity();
         setCancelled(event.isCancelled());
     }
 
-    public @NotNull Player getDamager(){
-        return (Player) super.getDamager();
-    }
 
-    public HandlerList getHandler(){
+    public @NotNull HandlerList getHandlers(){
         return handlers;
     }
 
-    public Player getPlayer(){
-        return (Player) getEntity();
-    }
 
     @Contract(pure = true)
     public static @NotNull HandlerList getHandlerList(){
