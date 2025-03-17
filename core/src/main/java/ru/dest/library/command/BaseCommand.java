@@ -15,6 +15,7 @@ import java.util.List;
 import static ru.dest.library.utils.Utils.list;
 
 public abstract class BaseCommand<T extends IPlugin<?>> implements ICommand<T>, ITabCompletableCommand{
+
     @Getter
     protected final T plugin;
 

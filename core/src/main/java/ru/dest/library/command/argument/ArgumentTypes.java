@@ -1,12 +1,13 @@
 package ru.dest.library.command.argument;
 
 import lombok.experimental.UtilityClass;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
-import ru.dest.library.command.Execution;
-import ru.dest.library.lang.Message;
-import ru.dest.library.object.FormatPair;
+
 import ru.dest.library.utils.Patterns;
 import ru.dest.library.utils.TimeUnit;
+import ru.dest.library.lang.Message;
+import ru.dest.library.object.FormatPair;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,15 +20,19 @@ public class ArgumentTypes {
     private final Map<Class<?>, IArgumentType> types = new HashMap<>();
 
     public final class IP_V4 implements IArgumentType{
+        @Contract(pure = true)
         @Override
-        public boolean isValid(String arg) {
+        public boolean isValid(@NotNull String arg) {
             return arg.matches(Patterns.IP_V4);
         }
 
+        @Contract(pure = true)
         @Override
-        public List<String> getCompletions() {
+        public @NotNull List<String> getCompletions(String arg) {
             return list("127.0.0.1", "127.0.0.2");
         }
+
+
     }
 
     public void register(Class<?> cl, IArgumentType type){
@@ -70,7 +75,7 @@ public class ArgumentTypes {
             }
 
             @Override
-            public List<String> getCompletions() {
+            public List<String> getCompletions(String arg) {
                 return list("SomeTextHere");
             }
         });
@@ -81,7 +86,7 @@ public class ArgumentTypes {
             }
 
             @Override
-            public List<String> getCompletions() {
+            public List<String> getCompletions(String arg) {
                 return list("1", "2", "10", "100", "500");
             }
         });
@@ -92,7 +97,7 @@ public class ArgumentTypes {
             }
 
             @Override
-            public List<String> getCompletions() {
+            public List<String> getCompletions(String arg) {
                 return list("1.0", "12.0", "15.4");
             }
         });
@@ -103,7 +108,7 @@ public class ArgumentTypes {
             }
 
             @Override
-            public List<String> getCompletions() {
+            public List<String> getCompletions(String arg) {
                 return list("true", "false");
             }
         });
@@ -115,7 +120,7 @@ public class ArgumentTypes {
             }
 
             @Override
-            public List<String> getCompletions() {
+            public List<String> getCompletions(String arg) {
                 return list("1s", "1m", "1h", "1d", "1M", "1w", "1y");
             }
         });

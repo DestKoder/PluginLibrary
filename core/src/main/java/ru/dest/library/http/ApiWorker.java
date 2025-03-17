@@ -63,6 +63,4 @@ public class ApiWorker{
             else if(onErrorConsumer != null) onErrorConsumer.accept(response);
         });
     }
-
-
 }

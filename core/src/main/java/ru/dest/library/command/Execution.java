@@ -14,8 +14,6 @@ public final class Execution {
     private final String alias;
 
     private final Map<String, String> flags;
-    // /cmd -s server=value
-    // /cmd -s server:value
 
     public Execution(Object sender, ICommand<?> cmd, String alias, String @NotNull [] args) {
         this.executor = sender;
