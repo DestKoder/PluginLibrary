@@ -7,6 +7,7 @@ import ru.dest.library.command.ann.*;
 import ru.dest.library.command.argument.ArgumentTypes;
 import ru.dest.library.object.ISendAble;
 import ru.dest.library.plugin.IPlugin;
+import ru.dest.library.utils.Utils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -104,38 +105,17 @@ public abstract class BaseCommand<T extends IPlugin<?>> implements ICommand<T>, 
 
     public void onExecute(Execution execution) throws Exception {
         //permission check
-        if(getPermissions() != null){
-            boolean pass = false;
-            for(String s : getPermissions()){
-                if(execution.hasPermission(s)) {
-                    pass = true;
-                    break;
-                }
-            }
-            if(!pass){
-                Library.get().getNoPermissionMessage().send(execution.executor());
-                return;
-            }
-
+        if(getPermissions() != null && !Utils.checkOneOf(execution::hasPermission, getPermissions())){
+            Library.get().getNoPermissionMessage().send(execution.executor());
+            return;
         }
 
-        //arguments check
         if(getArguments() != null){
-            boolean pass = true;
-            if((execution.arguments().length < getArguments().length)){
-                pass = false;
-            }else {
-                for(int i = 0; i < getArguments().length; i ++ ){
-                    String arg = execution.argument(i);
-                    Class<?> argType = getArguments()[i];
-
-                    pass = ArgumentTypes.check(argType, arg);
-                }
-            }
-            if(!pass) {
+            if(execution.arguments().length < arguments.length){
                 getUsage().send(execution.executor());
                 return;
             }
+            if(!ArgumentTypes.validate(execution, arguments)) return;
         }
 
         execute(execution);

@@ -1,6 +1,10 @@
 package ru.dest.library.command.argument;
 
 import lombok.experimental.UtilityClass;
+import org.jetbrains.annotations.NotNull;
+import ru.dest.library.command.Execution;
+import ru.dest.library.lang.Message;
+import ru.dest.library.object.FormatPair;
 import ru.dest.library.utils.Patterns;
 import ru.dest.library.utils.TimeUnit;
 
@@ -30,6 +34,24 @@ public class ArgumentTypes {
         types.put(cl, type);
     }
 
+    public boolean validate(Execution execution, Class<?> @NotNull [] args){
+        for(int i = 0; i < args.length; i++){
+            IArgumentType t = types.get(args[i]);
+            if(t == null) continue;
+
+            if(!t.isValid(execution.argument(i))){
+                Message invalid  = t.invalidMessage();
+
+                if(invalid != null){
+                    invalid.format(FormatPair.of("arg", i)).send(execution.executor());
+                }
+
+                return false;
+            }
+        }
+        return true;
+    }
+
     public boolean check(Class<?> cl, String arg){
         if(!types.containsKey(cl)) throw new IllegalArgumentException(cl + " is not registered as argument type");
         return types.get(cl).isValid(arg);
@@ -38,7 +60,6 @@ public class ArgumentTypes {
     public List<String> getCompletions(Class<?> cl){
         if(!types.containsKey(cl)) throw new IllegalArgumentException(cl + " is not registered as argument type");
         return types.get(cl).getCompletions();
-
     }
 
     static {
