@@ -58,6 +58,21 @@ public final class Utils {
         return result;
     }
 
+    /**
+     * Check one of values pass a condition
+     * @param condition condition
+     * @param values values to check
+     * @return true if one of values pass a condition or else in other cases
+     * @param <T> type of value
+     */
+    @SafeVarargs
+    public static <T> boolean checkOneOf(Predicate<T> condition, T... values){
+        for(T t : values){
+            if(condition.test(t)) return true;
+        }
+        return false;
+    }
+
 
     /**
      * Transforms string array to a single string

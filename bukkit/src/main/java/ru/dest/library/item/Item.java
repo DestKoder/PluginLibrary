@@ -3,6 +3,7 @@ package ru.dest.library.item;
 
 import com.google.gson.JsonObject;
 import lombok.Getter;
+import org.bukkit.Material;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.inventory.ItemStack;
@@ -22,7 +23,9 @@ import java.util.Objects;
 
 public class Item implements IItem, IRegistrable {
 
-    private final ItemProps properties;
+//    private final ItemProps properties;
+    private final Material material;
+    private final int model;
     private final String name;
     private final List<String> lore;
     @Getter
@@ -30,16 +33,17 @@ public class Item implements IItem, IRegistrable {
 
     private ItemStack item;
 
-    public Item(RegistryKey id, ItemProps properties, @Nullable String name, @Nullable List<String> lore) {
-        this.properties = properties;
+    public Item(RegistryKey id, Material m, int model, @Nullable String name, @Nullable List<String> lore) {
+        this.material = m;
+        this.model = model;
         this.name = name == null ? "item."+id.getId()+".name" : name;
         this.lore = lore == null ? new ArrayList<>() : lore;
         this.lore.add("&r");
         this.id = id;
     }
 
-    public Item(RegistryKey id, ItemProps props){
-        this(id, props, null, null);
+    public Item(RegistryKey id, Material m, int model){
+        this(id, m, model, null, null);
     }
 
 
@@ -59,9 +63,9 @@ public class Item implements IItem, IRegistrable {
         return name;
     }
 
-    public final int getMaxStackSize(){
-        return properties.getMaxStackSize();
-    }
+//    public final int getMaxStackSize(){
+//        return properties.getMaxStackSize();
+//    }
 
     public JsonObject toJson(JsonObject object){
         return object;
@@ -81,13 +85,13 @@ public class Item implements IItem, IRegistrable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(properties, name, lore, id, item);
+        return Objects.hash(material,model, name, lore, id, item);
     }
 
     @Override
     public String toString() {
         return "Item{" +
-                "properties=" + properties +
+                "properties=" + "{material="+material+", model="+model+"}" +
                 ", name='" + name + '\'' +
                 ", lore=" + lore +
                 ", id=" + id +
@@ -97,14 +101,14 @@ public class Item implements IItem, IRegistrable {
 
     public ItemStack get(){
         if(item!=null) return item.clone();
-        ItemStack item = new ItemStack(properties.getMaterial(), 1);
+        ItemStack item = new ItemStack(material, 1);
         ItemMeta meta = item.getItemMeta();
 
         meta.getPersistentDataContainer().set(LibraryMain.getInstance().getItemId(), PersistentDataType.STRING, id.toString());
 
         meta.setDisplayName(name);
         meta.setLore(lore);
-        meta.setCustomModelData(properties.getModel());
+        meta.setCustomModelData(model);
 
         item.setItemMeta(meta);
 
