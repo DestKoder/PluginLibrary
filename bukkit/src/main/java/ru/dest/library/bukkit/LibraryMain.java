@@ -83,7 +83,7 @@ public class LibraryMain extends MinecraftPlugin<LibraryMain, LibraryConfig> imp
             }
 
             @Override
-            public List<String> getCompletions() {
+            public List<String> getCompletions(String arg) {
                 return list(Bukkit.getOnlinePlayers(), Player::getName);
             }
         });

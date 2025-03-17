@@ -4,6 +4,7 @@ import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import ru.dest.library.command.Execution;
 import ru.dest.library.utils.Patterns;
 import ru.dest.library.utils.TimeUnit;
 import ru.dest.library.lang.Message;
@@ -62,10 +63,11 @@ public class ArgumentTypes {
         return types.get(cl).isValid(arg);
     }
 
-    public List<String> getCompletions(Class<?> cl){
+    public List<String> getCompletions(Class<?> cl, String arg){
         if(!types.containsKey(cl)) throw new IllegalArgumentException(cl + " is not registered as argument type");
-        return types.get(cl).getCompletions();
+        return types.get(cl).getCompletions(arg);
     }
+
 
     static {
         register(String.class, new IArgumentType() {

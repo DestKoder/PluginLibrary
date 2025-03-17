@@ -135,6 +135,6 @@ public abstract class BaseCommand<T extends IPlugin<?>> implements ICommand<T>, 
         if(arg > arguments.length) return list();
         Class<?> argType = arguments[arg-1];
 
-        return ArgumentTypes.getCompletions(argType);
+        return ArgumentTypes.getCompletions(argType, execution.argument(arg-1));
     }
 }
