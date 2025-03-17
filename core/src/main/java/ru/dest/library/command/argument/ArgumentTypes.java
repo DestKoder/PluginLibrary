@@ -1,6 +1,8 @@
 package ru.dest.library.command.argument;
 
 import lombok.experimental.UtilityClass;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 import ru.dest.library.utils.Patterns;
 import ru.dest.library.utils.TimeUnit;
 
@@ -15,15 +17,19 @@ public class ArgumentTypes {
     private final Map<Class<?>, IArgumentType> types = new HashMap<>();
 
     public final class IP_V4 implements IArgumentType{
+        @Contract(pure = true)
         @Override
-        public boolean isValid(String arg) {
+        public boolean isValid(@NotNull String arg) {
             return arg.matches(Patterns.IP_V4);
         }
 
+        @Contract(pure = true)
         @Override
-        public List<String> getCompletions() {
+        public @NotNull List<String> getCompletions(String arg) {
             return list("127.0.0.1", "127.0.0.2");
         }
+
+
     }
 
     public void register(Class<?> cl, IArgumentType type){
