@@ -22,6 +22,10 @@ public class Library {
     @Setter
     private Message noPermissionMessage, playerOnlyMessage, consoleOnlyMessage, internalErrorMessage, playerNotFoundMessage;
 
+    @Getter
+    @Setter
+    private Message argInvalidInteger, argInvalidDouble, argInvalidBoolean, argInvalidTimeUnit;
+
     public Library(ILogger logger, PlatformMethods methods, File folder) {
         this.logger = logger;
         this.methods = methods;

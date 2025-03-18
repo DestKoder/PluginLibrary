@@ -3,6 +3,7 @@ package ru.dest.library.lang;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.ComponentSerializer;
 import ru.dest.library.dependency.RuntimeDependency;
+import ru.dest.library.lang.serializer.TTFSerializer;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -40,7 +41,8 @@ public enum SerializerType {
         if(serializer == null) throw new RuntimeException("Error initalizing serailzier");
 
         return serializer;
-    });
+    }),
+    TTF(TTFSerializer::get);
     ;
     private final Supplier<ComponentSerializer<? extends Component, ? extends Component, String>> serializer;
 

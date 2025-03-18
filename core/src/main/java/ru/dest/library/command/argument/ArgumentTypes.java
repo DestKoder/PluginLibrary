@@ -4,6 +4,7 @@ import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
+import ru.dest.library.Library;
 import ru.dest.library.command.Execution;
 import ru.dest.library.utils.Patterns;
 import ru.dest.library.utils.TimeUnit;
@@ -91,6 +92,11 @@ public class ArgumentTypes {
             public List<String> getCompletions(String arg) {
                 return list("1", "2", "10", "100", "500");
             }
+
+            @Override
+            public Message invalidMessage() {
+                return Library.get().getArgInvalidInteger();
+            }
         });
         register(Double.class, new IArgumentType() {
             @Override
@@ -101,6 +107,10 @@ public class ArgumentTypes {
             @Override
             public List<String> getCompletions(String arg) {
                 return list("1.0", "12.0", "15.4");
+            }
+            @Override
+            public Message invalidMessage() {
+                return Library.get().getArgInvalidDouble();
             }
         });
         register(Boolean.class, new IArgumentType() {
@@ -113,6 +123,11 @@ public class ArgumentTypes {
             public List<String> getCompletions(String arg) {
                 return list("true", "false");
             }
+
+            @Override
+            public Message invalidMessage() {
+                return Library.get().getArgInvalidBoolean();
+            }
         });
         register(IP_V4.class, new IP_V4());
         register(TimeUnit.class, new IArgumentType() {
@@ -124,6 +139,11 @@ public class ArgumentTypes {
             @Override
             public List<String> getCompletions(String arg) {
                 return list("1s", "1m", "1h", "1d", "1M", "1w", "1y");
+            }
+
+            @Override
+            public Message invalidMessage() {
+                return Library.get().getArgInvalidTimeUnit();
             }
         });
     }
