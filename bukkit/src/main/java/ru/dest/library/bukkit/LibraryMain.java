@@ -30,9 +30,12 @@ import ru.dest.library.module.BukkitModules;
 import ru.dest.library.module.LibraryModules;
 import ru.dest.library.module.economy.PlayerPointsEconomy;
 import ru.dest.library.module.economy.VaultEconomy;
+import ru.dest.library.module.papi.CustomPlaceholders;
+import ru.dest.library.module.papi.PapiModule;
 import ru.dest.library.module.permission.LuckPermsPermissions;
 import ru.dest.library.module.permission.PermissionModule;
 import ru.dest.library.module.permission.VaultPermissions;
+import ru.dest.library.object.FormatPair;
 import ru.dest.library.plugin.MinecraftPlugin;
 import ru.dest.library.utils.TimeUtils;
 
@@ -76,7 +79,7 @@ public class LibraryMain extends MinecraftPlugin<LibraryMain, LibraryConfig> imp
             logger().info("Initialized Bukkit net.kyori.adventure provider");
         }
         Lang.registerSerializer(config().getMessageType());
-        ArgumentTypes.register(Player.class, new IArgumentType() {
+        ArgumentTypes.register(Player.class, new IArgumentType<Player>() {
             @Override
             public boolean isValid(String arg) {
                 return Bukkit.getPlayer(arg) != null;
@@ -85,6 +88,11 @@ public class LibraryMain extends MinecraftPlugin<LibraryMain, LibraryConfig> imp
             @Override
             public List<String> getCompletions(String arg) {
                 return list(Bukkit.getOnlinePlayers(), Player::getName);
+            }
+
+            @Override
+            public Player get(String val) {
+                return Bukkit.getPlayer(val);
             }
         });
 
@@ -110,10 +118,16 @@ public class LibraryMain extends MinecraftPlugin<LibraryMain, LibraryConfig> imp
         registry().register(new EventListener(this));
         getServer().getPluginManager().registerEvents(this, this);
 
+        FormatPair.regMapper(Player.class, Player::getName);
+        FormatPair.regMapper(OfflinePlayer.class, OfflinePlayer::getName);
+
         this.itemId = new NamespacedKey(this, "itemId");
 
         logger().info("Initializing modules...");
         initModules();
+
+        registerCustomPlaceholders();
+
         instance = this;
 
         startTasks();
@@ -151,6 +165,23 @@ public class LibraryMain extends MinecraftPlugin<LibraryMain, LibraryConfig> imp
             LibraryModules.registerModule(BukkitModules.DEFAULT_ECONOMY, vaultEconomy);
             logger().info("Using "+ ILogger.GREEN +"Vault"+ILogger.CYAN+" economy module as default economy provider");
         }
+
+        PapiModule module = PapiModule.init(getServer());
+        if(module != null){
+            LibraryModules.registerModule(PapiModule.class, module);
+        }
+    }
+
+    public void registerCustomPlaceholders(){
+        Map<String,String> customPlaceholders = config().getPlaceholders();
+        if(customPlaceholders.isEmpty()) return;
+
+        LibraryModules.getOptional(PapiModule.class).ifPresent(papi -> {
+            CustomPlaceholders<LibraryMain> placeholders = new CustomPlaceholders<>(this);
+            for(String s : customPlaceholders.keySet()){
+                placeholders.register(s, (plugin, player, args) -> customPlaceholders.get(s));
+            }
+        });
     }
 
 
@@ -158,6 +189,10 @@ public class LibraryMain extends MinecraftPlugin<LibraryMain, LibraryConfig> imp
     public void onPluginEnable(PluginEnableEvent event){
         if(event.getPlugin().getName().equals("PlaceholderAPI")){
             papiEnable = true;
+            PapiModule module = PapiModule.init(getServer());
+            if(module != null){
+                LibraryModules.registerModule(PapiModule.class, module);
+            }
         }
     }
 

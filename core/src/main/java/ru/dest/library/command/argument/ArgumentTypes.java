@@ -1,5 +1,6 @@
 package ru.dest.library.command.argument;
 
+import lombok.Getter;
 import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -19,9 +20,21 @@ import static ru.dest.library.utils.Utils.list;
 
 @UtilityClass
 public class ArgumentTypes {
-    private final Map<Class<?>, IArgumentType> types = new HashMap<>();
+    private final Map<Class<?>, IArgumentType<?>> types = new HashMap<>();
 
-    public final class IP_V4 implements IArgumentType{
+    @Getter
+    public final class IP_V4 implements IArgumentType<IP_V4>{
+
+        private String ip;
+
+        public IP_V4(String ip) {
+            this.ip = ip;
+        }
+
+        public IP_V4(){
+
+        }
+
         @Contract(pure = true)
         @Override
         public boolean isValid(@NotNull String arg) {
@@ -34,23 +47,31 @@ public class ArgumentTypes {
             return list("127.0.0.1", "127.0.0.2");
         }
 
-
+        @Override
+        public IP_V4 get(String value) {
+            return new IP_V4(value);
+        }
     }
 
-    public void register(Class<?> cl, IArgumentType type){
+    @SuppressWarnings("unchecked")
+    public <T> IArgumentType<T> getType(Class<T> cl){
+        return (IArgumentType<T>) types.get(cl);
+    }
+
+    public <T> void register(Class<T> cl, IArgumentType<T> type){
         types.put(cl, type);
     }
 
     public boolean validate(Execution execution, Class<?> @NotNull [] args){
         for(int i = 0; i < args.length; i++){
-            IArgumentType t = types.get(args[i]);
+            IArgumentType<?> t = types.get(args[i]);
             if(t == null) continue;
 
             if(!t.isValid(execution.argument(i))){
                 Message invalid  = t.invalidMessage();
 
                 if(invalid != null){
-                    invalid.format(FormatPair.of("arg", i)).send(execution.executor());
+                    invalid.format(FormatPair.of("arg", i)).format(FormatPair.of("val", execution.argument(i))).send(execution.executor());
                 }
 
                 return false;
@@ -71,7 +92,7 @@ public class ArgumentTypes {
 
 
     static {
-        register(String.class, new IArgumentType() {
+        register(String.class, new IArgumentType<String>() {
             @Override
             public boolean isValid(String arg) {
                 return true;
@@ -81,8 +102,13 @@ public class ArgumentTypes {
             public List<String> getCompletions(String arg) {
                 return list("SomeTextHere");
             }
+
+            @Override
+            public String get(String val) {
+                return val;
+            }
         });
-        register(Integer.class, new IArgumentType() {
+        register(Integer.class, new IArgumentType<Integer>() {
             @Override
             public boolean isValid(String arg) {
                 return arg.matches(Patterns.INTEGER);
@@ -97,8 +123,13 @@ public class ArgumentTypes {
             public Message invalidMessage() {
                 return Library.get().getArgInvalidInteger();
             }
+
+            @Override
+            public Integer get(String val) {
+                return Integer.parseInt(val);
+            }
         });
-        register(Double.class, new IArgumentType() {
+        register(Double.class, new IArgumentType<Double>() {
             @Override
             public boolean isValid(String arg) {
                 return arg.matches(Patterns.DOUBLE);
@@ -112,8 +143,13 @@ public class ArgumentTypes {
             public Message invalidMessage() {
                 return Library.get().getArgInvalidDouble();
             }
+
+            @Override
+            public Double get(String val) {
+                return Double.parseDouble(val);
+            }
         });
-        register(Boolean.class, new IArgumentType() {
+        register(Boolean.class, new IArgumentType<Boolean>() {
             @Override
             public boolean isValid(String arg) {
                 return arg.matches(Patterns.BOOLEAN);
@@ -128,9 +164,14 @@ public class ArgumentTypes {
             public Message invalidMessage() {
                 return Library.get().getArgInvalidBoolean();
             }
+
+            public Boolean get(String val){
+                return Boolean.parseBoolean(val);
+            }
         });
         register(IP_V4.class, new IP_V4());
-        register(TimeUnit.class, new IArgumentType() {
+
+        register(TimeUnit.class, new IArgumentType<TimeUnit>() {
             @Override
             public boolean isValid(String arg) {
                 return arg.matches(Patterns.TIME_UNIT);
@@ -144,6 +185,11 @@ public class ArgumentTypes {
             @Override
             public Message invalidMessage() {
                 return Library.get().getArgInvalidTimeUnit();
+            }
+
+            @Override
+            public TimeUnit get(String val) {
+                return new TimeUnit(val);
             }
         });
     }

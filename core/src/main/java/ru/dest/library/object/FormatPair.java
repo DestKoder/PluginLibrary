@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class FormatPair extends Pair<String, Object>{
 
-    private static final Map<Class<?>, Mapper<?>> MAPPERS = new HashMap<>();
+    public static final Map<Class<?>, Mapper<?>> MAPPERS = new HashMap<>();
 
     public static <T> void regMapper(Class<T> cl, Mapper<T> mapper){
         if(MAPPERS.containsKey(cl)) throw new IllegalStateException("Mapper for this class already registered");
@@ -16,10 +16,18 @@ public class FormatPair extends Pair<String, Object>{
     }
 
     private static Object map(@NotNull Object o){
-        if(MAPPERS.containsKey(o.getClass())){
-            return MAPPERS.get(o.getClass()).mapObj(o);
+        Mapper<?> mapper = MAPPERS.get(o.getClass());
+
+        if(mapper == null){
+            for(Class<?> i : o.getClass().getInterfaces()){
+                if(MAPPERS.containsKey(i)){
+                    mapper = MAPPERS.get(i);
+                    break;
+                }
+            }
         }
-        return o;
+
+        return mapper == null ? o : mapper.mapObj(o);
     }
 
     public FormatPair(String firstValue, Object secondValue) {

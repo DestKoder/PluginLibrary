@@ -5,3 +5,5 @@ main: ru.dest.library.bukkit.LibraryMain
 load: STARTUP
 softdepend:
   - PlaceholderAPI
+  - Vault
+  - LuckPerms

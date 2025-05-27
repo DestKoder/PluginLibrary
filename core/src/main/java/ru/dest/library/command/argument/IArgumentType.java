@@ -6,7 +6,7 @@ import ru.dest.library.object.ISendAble;
 
 import java.util.List;
 
-public interface IArgumentType {
+public interface IArgumentType<T> {
 
     boolean isValid(String arg);
 
@@ -15,4 +15,6 @@ public interface IArgumentType {
     }
 
     List<String> getCompletions(String arg);
+
+    T get(String val);
 }

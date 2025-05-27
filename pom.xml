@@ -6,11 +6,12 @@
 
     <groupId>ru.dest</groupId>
     <artifactId>PluginLibrary</artifactId>
-    <version>1.5</version>
+    <version>1.7</version>
     <packaging>pom</packaging>
     <modules>
         <module>core</module>
         <module>bukkit</module>
+        <module>velocity</module>
     </modules>
 
     <properties>
@@ -21,9 +22,8 @@
 
     <distributionManagement>
         <repository>
-            <id>internal.repo</id>
-            <name>My Repository</name>
-            <url>file:D:\repo\DestKoder.github.io\maven\</url>
+            <id>astrolent-repo</id>
+            <url>https://repo.astrolent.com/releases</url>
         </repository>
     </distributionManagement>
 

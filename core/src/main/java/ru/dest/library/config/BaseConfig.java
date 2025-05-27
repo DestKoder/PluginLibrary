@@ -32,6 +32,7 @@ public abstract class BaseConfig {
 
         if(cFile != null && !cFile.exists()) save();
 
+        System.out.println("Loading config " + (cFile != null ? cFile.getPath() : url));
         DataConfig data = cFile != null ? ConfigWorker.load(cFile) : ConfigWorker.loadRemote(url);
 
         List<ConfigField> fields = getFields();
@@ -41,7 +42,8 @@ public abstract class BaseConfig {
             FieldType type = f.getType();
             String path = f.getPath();
             Object val = data.get(path);
-//            System.out.println(val);
+
+            System.out.println("Setting value of Field " + field.getName() + " to " + val);
 
             if(val == null)continue;
             if(type == FieldType.INTEGER){
@@ -51,7 +53,6 @@ public abstract class BaseConfig {
                 if(val instanceof Float){
                     val = ((Float)val).intValue();
                 }
-//                val = ;
             }
             if(type == FieldType.FLOAT){
                 if(val instanceof Double){
@@ -76,7 +77,8 @@ public abstract class BaseConfig {
                     ReflectionUtils.setValue(field, this, val);
                 //TODO: add serialization support
             }
-
+            f.getField().setAccessible(true);
+            System.out.println(f.getField().getName() + " value is " + f.getField().get(this));
         }
 
 

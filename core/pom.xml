@@ -6,7 +6,7 @@
     <parent>
         <groupId>ru.dest</groupId>
         <artifactId>PluginLibrary</artifactId>
-        <version>1.5</version>
+        <version>1.7</version>
     </parent>
 
     <artifactId>PluginLibraryCore</artifactId>
@@ -46,6 +46,11 @@
             <artifactId>sqlite-jdbc</artifactId>
             <version>3.46.0.0</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.10.2</version>
         </dependency>
     </dependencies>
 

@@ -1,4 +1,4 @@
-package ru.dest.library.bukkit;
+package ru.dest.library.velocity;
 
 import lombok.Getter;
 import ru.dest.library.config.BaseConfig;
@@ -6,15 +6,13 @@ import ru.dest.library.config.ann.ConfigPath;
 import ru.dest.library.lang.SerializerType;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
-
 @Getter
 public class LibraryConfig extends BaseConfig {
 
-    private final String materialHead = "PLAYER_SKULL";
 
-    private final Map<String, String> placeholders = new HashMap<>();
+    public LibraryConfig(File file) {
+        super(file);
+    }
 
     private final String messagePlayeronly = "&cThis command available only for players";
     private final String messageConsoleonly = "&cThis command available only for console";
@@ -24,11 +22,6 @@ public class LibraryConfig extends BaseConfig {
     @ConfigPath("message.player-not-found")
     private final String messagePlayerNotFound = "&cPlayer {player} isn't online";
 
-
     @ConfigPath("message-type")
     private final SerializerType messageType = SerializerType.LEGACY;
-
-    public LibraryConfig(File file) {
-        super(file);
-    }
 }

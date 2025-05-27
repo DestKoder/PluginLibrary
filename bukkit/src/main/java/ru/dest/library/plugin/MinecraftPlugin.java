@@ -92,7 +92,7 @@ public abstract class MinecraftPlugin<T extends MinecraftPlugin<T, CFG>, CFG ext
             } catch (IOException e) {
                 logger.warning("Couldn't load lang file " + langFile());
                 logger.error(e);
-                lang=null;
+                this.lang=null;
             }
         }
         try{

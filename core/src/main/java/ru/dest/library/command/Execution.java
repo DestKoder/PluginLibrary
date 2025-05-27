@@ -2,6 +2,8 @@ package ru.dest.library.command;
 
 import org.jetbrains.annotations.NotNull;
 import ru.dest.library.Library;
+import ru.dest.library.command.argument.ArgumentTypes;
+import ru.dest.library.command.argument.IArgumentType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,6 +44,13 @@ public final class Execution {
     }
 
 
+    public ICommand<?> command(){
+        return command;
+    }
+
+    public String alias(){
+        return alias;
+    }
 
     @SuppressWarnings("unchecked")
     public <OBJ> OBJ executor() {
@@ -56,6 +65,17 @@ public final class Execution {
         if(arg >= arguments.length) throw new IllegalArgumentException("arg out of bounds");
         return arguments[arg];
     }
+
+    public <T> T argument(int arg, Class<T> cl){
+        if(arg >= arguments.length) throw new IllegalArgumentException("arg out of bounds");
+        IArgumentType<T> type = ArgumentTypes.getType(cl);
+        if(type == null) throw new IllegalArgumentException("No such argument type");
+
+        if(!type.isValid(argument(arg))) throw new IllegalArgumentException("Argument " + arg + " is not valid for type " + cl);
+
+        return type.get(argument(arg));
+    }
+
     @SuppressWarnings("unchecked")
     public <OBJ> OBJ onlinePlayer(int arg) {
         return (OBJ) Library.get().getMethods().getOnlinePlayer(argument(arg));
