@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import ru.dest.library.ITaskManager;
 import ru.dest.library.bukkit.BukkitRegistry;
 import ru.dest.library.bukkit.BukkitTaskManager;
+import ru.dest.library.command.CommandRegistrar;
 import ru.dest.library.config.BaseConfig;
 import ru.dest.library.lang.Lang;
 import ru.dest.library.logging.ILogger;
@@ -55,6 +56,8 @@ public abstract class MinecraftPlugin<T extends MinecraftPlugin<T, CFG>, CFG ext
 
             this.registry = new BukkitRegistry<>((T)this);
             taskManager = new BukkitTaskManager(this);
+
+            ((CommandRegistrar<T>)this.registry).onPluginEnable();
 
             enable();
         }catch (Exception e){

@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
 import org.reflections.Reflections;
 import ru.dest.library.command.BaseCommand;
+import ru.dest.library.command.CommandRegistrar;
 import ru.dest.library.listener.BukkitListener;
 import ru.dest.library.plugin.IRegistry;
 import ru.dest.library.plugin.MinecraftPlugin;
@@ -13,16 +14,22 @@ import ru.dest.library.utils.ReflectionUtils;
 
 import java.lang.reflect.Field;
 
-public final class BukkitRegistry<T extends MinecraftPlugin<T, ?>> implements IRegistry<T> {
+public final class BukkitRegistry<T extends MinecraftPlugin<T, ?>> extends CommandRegistrar<T> implements IRegistry<T> {
 
     private final T plugin;
     private final CommandMap commandMap;
 
     public BukkitRegistry(T plugin) throws Exception{
+        super(plugin);
         this.plugin = plugin;
 
         Field field = Bukkit.getServer().getClass().getDeclaredField("commandMap");
         this.commandMap = (CommandMap) ReflectionUtils.getValue(field, Bukkit.getServer());
+    }
+
+    @Override
+    public void register(BaseCommand<T> cmd) {
+        this.register(cmd);
     }
 
     @SafeVarargs

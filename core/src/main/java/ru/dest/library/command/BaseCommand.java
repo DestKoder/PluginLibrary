@@ -11,6 +11,7 @@ import ru.dest.library.utils.Utils;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import static ru.dest.library.utils.Utils.list;
 
@@ -33,25 +34,28 @@ public abstract class BaseCommand<T extends IPlugin<?>> implements ICommand<T>, 
     public BaseCommand(T plugin){
         this.plugin = plugin;
         Command ann = getClass().getDeclaredAnnotation(Command.class);
-        if(ann == null) throw new IllegalStateException("BaseCommand must have a @Command annotation");
+        SubCommand subAnn = getClass().getDeclaredAnnotation(SubCommand.class);
+        if(ann == null && subAnn == null) throw new IllegalStateException("BaseCommand must have a @Command or @SubCommand annotation");
 
-        this.name = ann.value();
+        this.name = ann != null ? ann.value() : subAnn.name();
         if(plugin.hasLang()){
             this.usage = plugin.lang().getMessage("usage."+name);
         }else usage = null;
 
-        this.aliases = list(ann.aliases());
-        if(ann.permissions().length > 0) {
+        this.aliases = list(ann != null ? ann.aliases() : subAnn.aliases() );
+        if(ann != null && ann.permissions().length > 0) {
             this.permissions = ann.permissions();
-        }else this.permissions = null;
+        }else if(subAnn != null && subAnn.permissions().length > 0) {
+            this.permissions = subAnn.permissions();
+        }else this.permissions=null;
 
-        if(ann.args().length > 0){
-            this.arguments = ann.args();
-        }else this.arguments = null;
+        this.arguments = ann != null ? ann.args() : subAnn.args();
 
-        this.playerOnly = ann.playerOnly();
-        this.consoleOnly = ann.consoleOnly();
+        this.playerOnly = ann != null ? ann.playerOnly() : subAnn.playerOnly();
+        this.consoleOnly = ann != null ? ann.consoleOnly() : subAnn.consoleOnly();
     }
+
+
 
     public BaseCommand(T plugin, String name, String... args) {
         this.plugin = plugin;
@@ -122,7 +126,6 @@ public abstract class BaseCommand<T extends IPlugin<?>> implements ICommand<T>, 
         execute(execution);
     }
 
-
     @Override
     public abstract void execute(Execution execution) throws Exception;
 
@@ -136,5 +139,18 @@ public abstract class BaseCommand<T extends IPlugin<?>> implements ICommand<T>, 
         Class<?> argType = arguments[arg-1];
 
         return ArgumentTypes.getCompletions(argType, execution.argument(arg-1));
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) return true;
+        if (object == null || getClass() != object.getClass()) return false;
+        BaseCommand<?> that = (BaseCommand<?>) object;
+        return playerOnly == that.playerOnly && consoleOnly == that.consoleOnly && Objects.equals(plugin, that.plugin) && Objects.equals(name, that.name) && Objects.equals(usage, that.usage) && Objects.equals(aliases, that.aliases) && Objects.deepEquals(permissions, that.permissions) && Objects.deepEquals(arguments, that.arguments);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(plugin, name, usage, aliases, Arrays.hashCode(permissions), Arrays.hashCode(arguments), playerOnly, consoleOnly);
     }
 }
