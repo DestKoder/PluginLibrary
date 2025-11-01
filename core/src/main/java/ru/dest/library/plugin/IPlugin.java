@@ -21,7 +21,7 @@ public interface IPlugin<CFG extends BaseConfig> {
     File getDataFolder();
 
     @NotNull
-    IRegistry registry();
+    IRegistry<?> registry();
     @NotNull
     ILogger logger();
 

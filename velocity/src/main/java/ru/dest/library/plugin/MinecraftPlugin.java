@@ -13,7 +13,9 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.dest.library.ITaskManager;
+import ru.dest.library.command.ModernRegistrar;
 import ru.dest.library.config.BaseConfig;
+import ru.dest.library.ioc.UseAutoRegistration;
 import ru.dest.library.lang.Lang;
 import ru.dest.library.logging.ILogger;
 import ru.dest.library.logging.SimpleLogger;
@@ -76,6 +78,8 @@ public abstract class MinecraftPlugin<T extends MinecraftPlugin<T, CFG>, CFG ext
 
             this.registry = new VelocityRegistry<T>((T)this);
             this.taskManager = new VelocityTaskManager<T>((T)this);
+
+            if(this.getClass().isAnnotationPresent(UseAutoRegistration.class)) ((ModernRegistrar<T>)this.registry).onPluginEnable();
         }catch (Exception e){
             this.logger.warning("Error enabling " + getName() + ": " + e.getMessage());
             this.logger.error(e);

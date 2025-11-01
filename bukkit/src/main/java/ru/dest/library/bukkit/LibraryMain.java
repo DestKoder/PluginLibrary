@@ -18,11 +18,9 @@ import org.bukkit.scheduler.BukkitTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.dest.library.Library;
-import ru.dest.library.bukkit.listener.EventListener;
-import ru.dest.library.bukkit.listener.GUIListener;
-import ru.dest.library.bukkit.listener.ItemsListener;
 import ru.dest.library.command.argument.ArgumentTypes;
 import ru.dest.library.command.argument.IArgumentType;
+import ru.dest.library.ioc.UseAutoRegistration;
 import ru.dest.library.lang.Lang;
 import ru.dest.library.lang.impl.ComponentMessage;
 import ru.dest.library.logging.ILogger;
@@ -44,6 +42,7 @@ import java.util.*;
 
 import static ru.dest.library.utils.Utils.list;
 
+@UseAutoRegistration
 public class LibraryMain extends MinecraftPlugin<LibraryMain, LibraryConfig> implements Listener {
 
     private static final Logger log = LoggerFactory.getLogger(LibraryMain.class);
@@ -113,9 +112,6 @@ public class LibraryMain extends MinecraftPlugin<LibraryMain, LibraryConfig> imp
         Library.get().setInternalErrorMessage(new ComponentMessage(config().getMessageInternalError()));
         Library.get().setPlayerNotFoundMessage(new ComponentMessage(config().getMessagePlayerNotFound()));
 
-        registry().register(new ItemsListener(this));
-        registry().register(new GUIListener(this));
-        registry().register(new EventListener(this));
         getServer().getPluginManager().registerEvents(this, this);
 
         FormatPair.regMapper(Player.class, Player::getName);

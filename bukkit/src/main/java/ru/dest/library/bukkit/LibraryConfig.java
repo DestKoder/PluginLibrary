@@ -24,6 +24,11 @@ public class LibraryConfig extends BaseConfig {
     @ConfigPath("message.player-not-found")
     private final String messagePlayerNotFound = "&cPlayer {player} isn't online";
 
+    @ConfigPath("message.no-such-plugin")
+    private final String messageNoSuchPlugin = "&aPlugin {plugin} not found!";
+    @ConfigPath("message.not-library-plugin")
+    private final String messageNotLibraryPlugin = "&aPlugin {plugin} is not a library plugin!";
+
 
     @ConfigPath("message-type")
     private final SerializerType messageType = SerializerType.LEGACY;

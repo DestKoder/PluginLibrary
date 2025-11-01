@@ -6,8 +6,9 @@ import org.jetbrains.annotations.NotNull;
 import ru.dest.library.ITaskManager;
 import ru.dest.library.bukkit.BukkitRegistry;
 import ru.dest.library.bukkit.BukkitTaskManager;
-import ru.dest.library.command.CommandRegistrar;
+import ru.dest.library.command.ModernRegistrar;
 import ru.dest.library.config.BaseConfig;
+import ru.dest.library.ioc.UseAutoRegistration;
 import ru.dest.library.lang.Lang;
 import ru.dest.library.logging.ILogger;
 import ru.dest.library.logging.SimpleLogger;
@@ -37,7 +38,6 @@ public abstract class MinecraftPlugin<T extends MinecraftPlugin<T, CFG>, CFG ext
             logger.warning("Error occupied during loading state");
             logger.error(e);
         }
-
     }
 
     @Override
@@ -57,7 +57,7 @@ public abstract class MinecraftPlugin<T extends MinecraftPlugin<T, CFG>, CFG ext
             this.registry = new BukkitRegistry<>((T)this);
             taskManager = new BukkitTaskManager(this);
 
-            ((CommandRegistrar<T>)this.registry).onPluginEnable();
+            if(this.getClass().isAnnotationPresent(UseAutoRegistration.class)) ((ModernRegistrar<T>)this.registry).onPluginEnable();
 
             enable();
         }catch (Exception e){

@@ -4,17 +4,20 @@ import com.velocitypowered.api.command.CommandMeta;
 import org.jetbrains.annotations.NotNull;
 import org.reflections.Reflections;
 import ru.dest.library.command.BaseCommand;
+import ru.dest.library.command.ModernRegistrar;
 import ru.dest.library.listener.PluginListener;
 import ru.dest.library.plugin.IRegistry;
 import ru.dest.library.plugin.MinecraftPlugin;
 
-public class VelocityRegistry<T extends MinecraftPlugin<T, ?>> implements IRegistry<T> {
+public class VelocityRegistry<T extends MinecraftPlugin<T, ?>> extends ModernRegistrar<T> {
 
     private final T plugin;
 
     public VelocityRegistry(T plugin) {
+        super(plugin);
         this.plugin = plugin;
     }
+
 
     @SafeVarargs
     @Override

@@ -11,4 +11,7 @@ public interface IRegistry<T extends IPlugin<?>> {
 
     void registerListeners(String packageName);
     void registerCommands(String packageName);
+
+
+
 }

@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import ru.dest.library.Library;
 import ru.dest.library.command.argument.ArgumentTypes;
 import ru.dest.library.command.argument.IArgumentType;
+import ru.dest.library.lang.Message;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,6 +44,9 @@ public final class Execution {
         }
     }
 
+    public void answer(@NotNull Message message){
+        message.send(executor);
+    }
 
     public ICommand<?> command(){
         return command;
