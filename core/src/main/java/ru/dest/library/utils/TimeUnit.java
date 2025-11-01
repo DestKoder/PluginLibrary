@@ -38,10 +38,18 @@ public class TimeUnit {
         this.amount = Integer.parseInt(s.substring(0, s.length()-1));
     }
 
+    /**
+     * Convert to seconds
+     * @return seconds equivalent of TimeUnit
+     */
     public long toSeconds(){
         return (long)multipliers.get(symbol)*amount;
     }
 
+    /**
+     * Convert to milliseconds
+     * @return milliseconds equivalent of TimeUnit
+     */
     public long toMillis(){
         return toSeconds()*1000;
     }

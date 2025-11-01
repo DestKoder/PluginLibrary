@@ -219,9 +219,4 @@ public final class Utils {
     }
 
 
-//    public static void send(@NotNull CommandSender sender, @NotNull String message){
-//        Arrays.stream(message.split(Library.msgSeparator)).forEach(sender::sendMessage);
-//    }
-
-
 }

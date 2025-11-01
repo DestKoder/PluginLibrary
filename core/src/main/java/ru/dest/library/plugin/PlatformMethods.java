@@ -5,6 +5,11 @@ import ru.dest.library.object.ISendAble;
 
 import java.util.List;
 
+/**
+ * Interface describing a Platform on which
+ * Library plugin is running
+ *
+ */
 public interface PlatformMethods {
     void send(Object receiver, ISendAble message);
     void broadcast(ISendAble message);

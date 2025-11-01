@@ -1,11 +1,15 @@
 package ru.dest.library.database;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import ru.dest.library.database.provider.ConnectionProvider;
 import ru.dest.library.database.provider.H2LocalProvider;
 import ru.dest.library.database.provider.SQLiteProvider;
 import ru.dest.library.database.query.InsertQuery;
+import ru.dest.library.dependency.RuntimeDependency;
 import ru.dest.library.logging.ILogger;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -24,17 +28,37 @@ import java.util.concurrent.CompletableFuture;
  */
 public class Database {
 
-    private final ConnectionProvider provider;
     private final ILogger logger;
-    private final int poolSize;
 
     private Vector<Connection> available, used;
     private Connection connection;
 
+    private final HikariDataSource db;
+
     public Database(ConnectionProperties props, ILogger logger) throws Exception {
-        this.provider = props.create();
-        this.poolSize = props.getPoolSize();
-        this.available = used = new Vector<>();
+        Optional<ClassLoader> l = RuntimeDependency.loadIfAbsent("com.zaxxer.hikari.HikariConfig", "https://repo1.maven.org/maven2/com/zaxxer/HikariCP/7.0.2/HikariCP-7.0.2.jar");
+
+        if(l.isEmpty()) throw new RuntimeException("Couldn't load hikari cp!");
+
+        HikariConfig config = (HikariConfig) l.get().loadClass("com.zaxxer.hikari.HikariConfig").getConstructor().newInstance();
+
+        config.setJdbcUrl( "jdbc:"+props.getDriver().split("_")[0].toLowerCase()+":"+
+                (props.getDriver().equals("H2") || props.getDriver().equals("SQLITE") ?
+                        new File(props.getRootDir(), props.getBase() == null ? "database" : props.getBase() + ".db")
+                        :
+                        "//"+props.getHost()+":"+props.getPort()+"/"+props.getBase()+"?"+props.getParams())
+        );
+        config.setUsername( props.getUser() );
+        config.setPassword( props.getPassword() );
+        config.addDataSourceProperty( "cachePrepStmts" , "true" );
+        config.addDataSourceProperty( "prepStmtCacheSize" , "250" );
+        config.addDataSourceProperty( "prepStmtCacheSqlLimit" , "2048" );
+
+        config.setMaximumPoolSize(props.getPoolSize());
+
+
+        this.db = (HikariDataSource) l.get().loadClass("com.zaxxer.hikari.HikariDataSource").getConstructor(HikariConfig.class).newInstance(config);
+
         this.logger = logger;
     }
 
@@ -43,13 +67,7 @@ public class Database {
      * @throws SQLException if error occupied
      */
     public void connect() throws SQLException {
-        if(poolSize < 2 || provider instanceof SQLiteProvider || provider instanceof H2LocalProvider){
-            connection = provider.connect();
-            return;
-        }
-        for(int i = 0; i < poolSize; i++){
-            this.available.add(provider.connect());
-        }
+         db.getConnection();
     }
 
     /**
@@ -58,35 +76,15 @@ public class Database {
      * @throws SQLException if error occupied
      */
     public Connection retrieve() throws SQLException{
-        if(poolSize < 2 || provider instanceof SQLiteProvider || provider instanceof H2LocalProvider){
-            if(connection == null ) connection = provider.connect();;
-            return connection;
-        }
-        Connection newConn = null;
-        if (available.isEmpty()) {
-            newConn = provider.connect();
-        } else {
-            newConn = (Connection) available.lastElement();
-            available.removeElement(newConn);
-        }
-        used.addElement(newConn);
-        return newConn;
+        return db.getConnection();
     }
 
     /**
      * Return connection to pool
      * @param c {@link Connection} which was taken by {@link Database::retrieve}
      */
-    public void putback(Connection c){
-        if(poolSize < 2 || provider instanceof SQLiteProvider || provider instanceof H2LocalProvider) return;
-        if (c != null) {
-            if (used.removeElement(c)) {
-                available.addElement(c);
-            } else {
-                throw new IllegalArgumentException("Connection not in the usedConnections array");
-            }
-        }
-    }
+    @Deprecated
+    public void putback(Connection c){}
 
     private void fill(PreparedStatement stmt, Object[] data) throws SQLException {
         for(int i = 0; i < data.length; i ++){
@@ -115,7 +113,7 @@ public class Database {
                 fill(stmt, data);
                 int rows = stmt.executeUpdate();
                 stmt.close();
-                putback(conn);
+//                putback(conn);
                 future.complete(rows);
             }catch (SQLException e){
                 logger.warning("Couldn't update/insert/delete: " + e.getMessage());
@@ -149,9 +147,10 @@ public class Database {
                 while (rs.next()){
                     result.add(handler.handle(rs));
                 }
+
                 rs.close();
                 stmt.close();
-                putback(conn);
+//                putback(conn);
                 future.complete(result);
             }catch (SQLException e){
                 logger.warning("Couldn't update/insert/delete: " + e.getMessage());
@@ -176,11 +175,16 @@ public class Database {
      * @param <T> Type of object to receive;
      */
     public  <T> CompletableFuture<Optional<T>> queryOne(String sql, ResultSetHandler<T> handler, Object... data) {
+
         CompletableFuture<Optional<T>> future = new CompletableFuture<>();
         CompletableFuture.runAsync(() -> {
             try{
+//                if(!sql.contains("LIMIT")){
+//                    sql += "LIMIT 1";
+//                }
+//                String query = sql.contains("LIMIT") ? sql : sql.endsWith(";") ? sql.substring(0, sql.length()-2) + "LIMIT 1;" : "";
                 Connection conn = retrieve();
-                PreparedStatement stmt = conn.prepareStatement(sql);
+                PreparedStatement stmt = conn.prepareStatement(sql.contains("LIMIT") ? sql : (sql.endsWith(";") ? sql.substring(0, sql.length()-2) + "LIMIT 1" : sql+"LIMIT 1" ));
                 fill(stmt, data);
                 ResultSet rs = stmt.executeQuery();
                 Optional<T> result;
@@ -190,7 +194,7 @@ public class Database {
 
                 rs.close();
                 stmt.close();
-                putback(conn);
+//                putback(conn);
 
                 future.complete(result);
             }catch (SQLException e){

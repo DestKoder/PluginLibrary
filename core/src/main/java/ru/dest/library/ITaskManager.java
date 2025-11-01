@@ -1,5 +1,8 @@
 package ru.dest.library;
 
+/**
+ * Class representing a manager of plugin tasks
+ */
 public interface ITaskManager {
 
     /**

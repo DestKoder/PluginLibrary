@@ -8,6 +8,10 @@ import ru.dest.library.logging.ILogger;
 
 import java.io.File;
 
+/**
+ * Interface which represents any of Library plugins
+ * @param <CFG> type of config class
+ */
 public interface IPlugin<CFG extends BaseConfig> {
 
     @NotNull

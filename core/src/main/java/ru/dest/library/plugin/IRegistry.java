@@ -4,6 +4,11 @@ import org.reflections.Reflections;
 import ru.dest.library.command.BaseCommand;
 import ru.dest.library.listener.PluginListener;
 
+/**
+ * Interface which represents a class which works
+ * with command & listener registration
+ * @param <T>
+ */
 public interface IRegistry<T extends IPlugin<?>> {
 
     void register(BaseCommand<T>... commands);

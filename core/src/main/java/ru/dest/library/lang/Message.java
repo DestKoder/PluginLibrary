@@ -5,6 +5,9 @@ import ru.dest.library.object.ICanBeUsedAsKickReason;
 import ru.dest.library.object.IFormatAble;
 import ru.dest.library.object.ISendAble;
 
+/**
+ * Describe a message which can be sent to a player or console
+ */
 public interface Message extends ISendAble, IFormatAble<Message>, ICanBeUsedAsKickReason {
     @NotNull
     Message setHoverText(@NotNull String text);

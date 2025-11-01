@@ -9,6 +9,9 @@ import ru.dest.library.plugin.PlatformMethods;
 
 import java.io.File;
 
+/**
+ * Core library class for access some library features.
+ */
 @Getter
 public class Library {
     public static GsonBuilder builder = new GsonBuilder();

@@ -18,7 +18,7 @@ public class H2LocalProvider extends ConnectionProvider{
         super(props);
         DatabaseDriver.H2.load();
 
-        this.url = "dbc:h2:"+ new File(props.getRootDir(), props.getBase() == null ? "database" : props.getBase() + ".h2.db");
+        this.url = "jdbc:h2:"+ new File(props.getRootDir(), props.getBase() == null ? "database" : props.getBase() + ".h2.db");
     }
 
     @Override

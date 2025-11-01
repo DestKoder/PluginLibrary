@@ -7,9 +7,19 @@ import ru.dest.library.object.FieldType;
 import java.lang.reflect.Field;
 import java.util.List;
 
+/**
+ * Some utilities for working with reflection
+ */
 @UtilityClass
 public final class ReflectionUtils {
 
+    /**
+     * Set a field value
+     * @param f field to set value in
+     * @param parent object in which need to set value
+     * @param value value to set
+     * @throws IllegalAccessException
+     */
     public static void setValue(@NotNull Field f, Object parent, Object value) throws IllegalAccessException {
         boolean accessible = f.isAccessible();
         if(!accessible) f.setAccessible(true);
@@ -17,6 +27,13 @@ public final class ReflectionUtils {
         f.setAccessible(accessible);
     }
 
+    /**
+     * Get a value of file
+     * @param f field to read value from
+     * @param parent object to read value from
+     * @return current value of passed field in passed object
+     * @throws IllegalAccessException
+     */
     public static Object getValue(@NotNull Field f, Object parent) throws IllegalAccessException {
         boolean accessible = f.isAccessible();
         if(!accessible) f.setAccessible(true);
@@ -25,6 +42,11 @@ public final class ReflectionUtils {
         return val;
     }
 
+    /**
+     * Get field {@link FieldType}
+     * @param f field
+     * @return {@link FieldType} of passed field
+     */
     public static FieldType getFieldType(@NotNull Field f){
         Class<?> cl = f.getType();
 
@@ -39,6 +61,16 @@ public final class ReflectionUtils {
         return FieldType.UNKNOWN;
     }
 
+    /**
+     * Call method.
+     * @param cl object class
+     * @param name name of method
+     * @param args types of method arguments
+     * @param o object which class is passed in first param
+     * @param values arguments to pass in method
+     * @return method result
+     * @throws Exception any exception in method call
+     */
     public static Object callMethod(@NotNull Class<?> cl, String name, Class<?>[] args, Object o, Object[] values) throws Exception {
         return cl.getMethod(name, args).invoke(o, values);
     }

@@ -6,6 +6,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Represents a global Library Module container
+ * register, get and check modules for {@link ru.dest.library.plugin.RequireModules}
+ */
 @UtilityClass
 @SuppressWarnings("unchecked")
 public final class LibraryModules {

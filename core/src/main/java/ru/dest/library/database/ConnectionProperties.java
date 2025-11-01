@@ -13,6 +13,7 @@ import java.io.File;
 public class ConnectionProperties {
 
     @NotNull
+    @Getter
     private final String driver;
     @Getter
     private final File rootDir;
