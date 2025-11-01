@@ -7,9 +7,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Point that this command is a sub command
+ * of some {@link CommandManager}
+ */
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SubCommand {
+
 
     Class<? extends CommandManager<?>> manager();
     String name();

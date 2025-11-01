@@ -12,6 +12,9 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Realization of {@link IRegistry} which supports auto-registering
+ */
 @SuppressWarnings("unchecked")
 public abstract class ModernRegistrar<T extends IPlugin<?>> implements IRegistry<T> {
 

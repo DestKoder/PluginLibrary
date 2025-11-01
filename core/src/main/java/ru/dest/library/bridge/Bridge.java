@@ -9,6 +9,10 @@ import org.jetbrains.annotations.Nullable;
 import ru.dest.library.Library;
 import ru.dest.library.plugin.IPlugin;
 
+/**
+ * Represents a bridge between server & proxy
+ * @param <PLUGIN>
+ */
 public abstract class Bridge<PLUGIN extends IPlugin<?>> {
 
     protected final Gson gson;
@@ -29,6 +33,12 @@ public abstract class Bridge<PLUGIN extends IPlugin<?>> {
         this.channel = getClass().getAnnotation(Channel.class).value();
     }
 
+    /**
+     * Send a json to another side
+     * @param player Player to associate packet with
+     * @param action some action
+     * @param el json to send
+     */
     public void send(@NotNull Object player, @NotNull String action, @Nullable JsonElement el) {
         JsonObject o = new JsonObject();
         o.addProperty("action", action);

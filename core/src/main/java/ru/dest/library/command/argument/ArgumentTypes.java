@@ -18,6 +18,9 @@ import java.util.Map;
 
 import static ru.dest.library.utils.Utils.list;
 
+/**
+ * Argument Types manager
+ */
 @UtilityClass
 public class ArgumentTypes {
     private final Map<Class<?>, IArgumentType<?>> types = new HashMap<>();

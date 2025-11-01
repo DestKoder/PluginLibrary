@@ -11,6 +11,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
+/**
+ * Represents a cooldowns which can be stored in file
+ */
 public class StoredCooldowns extends Cooldowns{
 
     private final File dataFile;
@@ -33,7 +36,7 @@ public class StoredCooldowns extends Cooldowns{
             UUID uuid = UUID.fromString(uuidData);
             List<Pair<String, Long>> data = new ArrayList<>();
 
-            ((Map<String,Object>)config.get(uuidData)).forEach((key, val) -> {
+            ((Map<String,Object>) config.get(uuidData)).forEach((key, val) -> {
                 data.add(new Pair<>(key, (Long)val));
             });
             super.data.put(uuid, data);

@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+/**
+ * Represents a command with sub commands
+ */
 public abstract class CommandManager<T extends IPlugin<?>> extends BaseCommand<T>{
 
     private final List<ICommand<T>> subCommands = new ArrayList<>();
@@ -24,6 +27,9 @@ public abstract class CommandManager<T extends IPlugin<?>> extends BaseCommand<T
         super(plugin, name, usage, args);
     }
 
+    /**
+     * Add subcommand to this command
+     */
     public void register(ICommand<T> cmd){
         this.subCommands.add(cmd);
     }
@@ -35,6 +41,10 @@ public abstract class CommandManager<T extends IPlugin<?>> extends BaseCommand<T
         return null;
     }
 
+    /**
+     * Method executed if no sub command found
+     * @param execution {@link Execution}
+     */
     protected void __default(Execution execution){
         if(getUsage()!= null) getUsage().send(execution.executor());
     }
