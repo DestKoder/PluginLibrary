@@ -5,10 +5,15 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 @Getter
 @SuppressWarnings("unchecked")
 public final class DataConfig {
@@ -27,7 +32,7 @@ public final class DataConfig {
     public Object get(@NotNull String key, Object def){
         Object val = null;
 
-        System.out.println(key);
+//        System.out.println(key);
         if(!key.contains(".")){
             return data.getOrDefault(key, def);
         };
@@ -36,9 +41,10 @@ public final class DataConfig {
         for(int i = 0 ; i < tmp.length; i ++){
             if(i != tmp.length-1){
                 if(val == null) val = data.get(tmp[i]);
-                else val = ((Map<String, Object>)val).get(tmp[i]);
+
+                else val = section(val).get(tmp[i]);
             }else {
-                if(val != null) val = ((Map<String, Object>)val).get(tmp[i]);
+                if(val != null) val = section(val).get(tmp[i]);
                 else val = data.get(tmp[i]);
             }
         }
@@ -47,6 +53,18 @@ public final class DataConfig {
         }else return val;
     }
 
+    private Map<String, Object> section(Object map){
+        if(!(map instanceof Map)) throw new IllegalArgumentException("Not map");
+        Map<Object, Object> m = (Map<Object, Object>) map;
+        Map<String,Object> section = new ConcurrentHashMap<>();
+        m.forEach((k,v )-> {
+            if(k.getClass() == String.class) section.put((String)k, v);
+            else section.put(k.toString(), v);
+        });
+
+        m = null;
+        return section;
+    }
 
     public void set(@NotNull String key, Object value){
         Map<String, Object> m = data;
@@ -78,9 +96,10 @@ public final class DataConfig {
         for(String s : section.keySet()){
             Object o = section.get(s);
             String nk = parent.isEmpty() ? s : parent + "." + s;
-            if(o instanceof Map) fillKeys((Map<String, Object>)o, nk,  set);
+            if(o instanceof Map) fillKeys(section(o), nk,  set);
             else set.add(nk);
         }
+
         return set;
     }
 

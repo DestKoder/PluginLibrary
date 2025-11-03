@@ -28,7 +28,8 @@ public class FormatPair extends Pair<String, Object>{
         MAPPERS.put(cl, mapper);
     }
 
-    private static Object map(@NotNull Object o){
+    private static Object map(Object o){
+        if(o == null) return "null";
         Mapper<?> mapper = MAPPERS.get(o.getClass());
 
         if(mapper == null){
@@ -65,7 +66,7 @@ public class FormatPair extends Pair<String, Object>{
         String map(T t);
 
         default String mapObj(Object o){
-            return map((T)o);
+            return o == null ? "null" : map((T)o);
         }
     }
 }

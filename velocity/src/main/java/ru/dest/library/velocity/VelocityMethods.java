@@ -17,7 +17,6 @@ public class VelocityMethods implements PlatformMethods {
 
     private final VelocityMain plugin;
 
-
     public VelocityMethods(VelocityMain plugin) {
         this.plugin = plugin;
     }

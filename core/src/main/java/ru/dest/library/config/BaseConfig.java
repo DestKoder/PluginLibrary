@@ -32,7 +32,7 @@ public abstract class BaseConfig {
 
         if(cFile != null && !cFile.exists()) save();
 
-        System.out.println("Loading config " + (cFile != null ? cFile.getPath() : url));
+//        System.out.println("Loading config " + (cFile != null ? cFile.getPath() : url));
         DataConfig data = cFile != null ? ConfigWorker.load(cFile) : ConfigWorker.loadRemote(url);
 
         List<ConfigField> fields = getFields();
@@ -43,7 +43,7 @@ public abstract class BaseConfig {
             String path = f.getPath();
             Object val = data.get(path);
 
-            System.out.println("Setting value of Field " + field.getName() + " to " + val);
+//            System.out.println("Setting value of Field " + field.getName() + " to " + val);
 
             if(val == null)continue;
             if(type == FieldType.INTEGER){
@@ -78,7 +78,7 @@ public abstract class BaseConfig {
                 //TODO: add serialization support
             }
             f.getField().setAccessible(true);
-            System.out.println(f.getField().getName() + " value is " + f.getField().get(this));
+//            System.out.println(f.getField().getName() + " value is " + f.getField().get(this));
         }
 
 

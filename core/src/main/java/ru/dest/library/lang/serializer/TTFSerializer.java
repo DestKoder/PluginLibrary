@@ -30,9 +30,10 @@ public final class TTFSerializer implements ComponentSerializer<Component, Compo
 
         for(String s : rawData){
             if(s.startsWith("ttp:") && comp != null){
-                comp = comp.hoverEvent(SerializerType.LEGACY.get().deserialize(s).asHoverEvent());
+                comp = comp.hoverEvent(SerializerType.LEGACY.get().deserialize(s.substring("ttp:".length())).asHoverEvent());
             }else if (s.startsWith("cmd:") && comp != null){
-                comp = comp.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, s.substring("cmd:".length())));
+                String cmd = s.substring("cmd:".length());
+                comp = comp.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.RUN_COMMAND, cmd.startsWith("/")?cmd:"/"+cmd));
             }else if (s.startsWith("sgt:") && comp != null){
                 comp = comp.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.SUGGEST_COMMAND, s.substring("sgt:".length())));
             }else if (s.startsWith("url:") && comp != null){
@@ -40,19 +41,17 @@ public final class TTFSerializer implements ComponentSerializer<Component, Compo
             }else if (s.startsWith("copy:") && comp != null) {
                 comp = comp.clickEvent(ClickEvent.clickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, s.substring("copy:".length())));
             }else{
-                if(comp == null) comp = SerializerType.LEGACY.get().deserialize(s);
-                else {
-                    if(result != null) result= result.appendNewline().append(comp);
-                    else result = comp;
-
+                //Если текущий компонент = null, сохраняем в него текущую строчку
+                if(comp == null){
+                    comp = SerializerType.LEGACY.get().deserialize(s);
+                }else {
+                    if(result == null) result = Component.text("").append(comp);
+                    result = result.appendNewline().append(comp);
                     comp = SerializerType.LEGACY.get().deserialize(s);
                 }
-
             }
         }
-
-        if(result == null) return Component.text("");
-        return result;
+        return result == null ? comp == null ? Component.text("") : Component.text("").append(comp) : result;
     }
 
     @Override

@@ -33,26 +33,24 @@ public abstract class BaseCommand<T extends IPlugin<?>> implements ICommand<T>, 
 
     public BaseCommand(T plugin){
         this.plugin = plugin;
-        Command ann = getClass().getDeclaredAnnotation(Command.class);
-        SubCommand subAnn = getClass().getDeclaredAnnotation(SubCommand.class);
-        if(ann == null && subAnn == null) throw new IllegalStateException("BaseCommand must have a @Command or @SubCommand annotation");
+        Command ann = getClass().getAnnotation(Command.class);
+//        SubCommand subAnn = getClass().getDeclaredAnnotation(SubCommand.class);
+        if(ann == null) throw new IllegalStateException("BaseCommand must have a @Command or @SubCommand annotation");
 
-        this.name = ann != null ? ann.value() : subAnn.name();
+        this.name = ann.value() ;
         if(plugin.hasLang()){
             this.usage = plugin.lang().getMessage("usage."+name);
         }else usage = null;
 
-        this.aliases = list(ann != null ? ann.aliases() : subAnn.aliases() );
-        if(ann != null && ann.permissions().length > 0) {
+        this.aliases = list(ann.aliases() );
+        if(ann.permissions().length > 0) {
             this.permissions = ann.permissions();
-        }else if(subAnn != null && subAnn.permissions().length > 0) {
-            this.permissions = subAnn.permissions();
         }else this.permissions=null;
 
-        this.arguments = ann != null ? ann.args() : subAnn.args();
+        this.arguments = ann.args();
 
-        this.playerOnly = ann != null ? ann.playerOnly() : subAnn.playerOnly();
-        this.consoleOnly = ann != null ? ann.consoleOnly() : subAnn.consoleOnly();
+        this.playerOnly = ann.playerOnly();
+        this.consoleOnly = ann.consoleOnly();
     }
 
 

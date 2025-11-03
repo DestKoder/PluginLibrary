@@ -1,6 +1,7 @@
 package ru.dest.library.command;
 
 import org.reflections.Reflections;
+import org.reflections.util.ConfigurationBuilder;
 import ru.dest.library.command.ann.SubCommand;
 import ru.dest.library.ioc.IOCUtils;
 import ru.dest.library.ioc.IgnoreAutoRegister;
@@ -31,11 +32,16 @@ public abstract class ModernRegistrar<T extends IPlugin<?>> implements IRegistry
 
     public void onPluginEnable(){
         String packageName = IOCUtils.getSearchPackage(plugin.getClass());
+        ClassLoader pluginClassLoader = plugin.getClass().getClassLoader();
 
-        Reflections scanner = new Reflections(packageName);
-
+        Reflections scanner = new Reflections(
+                new ConfigurationBuilder()
+                        .forPackage(packageName, pluginClassLoader)
+        );
+        System.out.println("Scanning " + packageName);
         //Ищем все команды
         for(Class<? extends BaseCommand> commandClass : scanner.getSubTypesOf(BaseCommand.class)){
+            System.out.println(commandClass);
             if(Modifier.isAbstract(commandClass.getModifiers())) continue;
             if(commandClass.isAnnotationPresent(IgnoreAutoRegister.class)) continue;
             BaseCommand<T> command;
@@ -50,7 +56,7 @@ public abstract class ModernRegistrar<T extends IPlugin<?>> implements IRegistry
             //Проверяем является ли наша команда Под коммандой какого нить менеджера команд.
             if(commandClass.isAnnotationPresent(SubCommand.class)){
                 SubCommand ann = commandClass.getDeclaredAnnotation(SubCommand.class);
-                this.subCommands.put(command, ann.manager());
+                this.subCommands.put(command, ann.value());
             }else{
                 //Если нет регистрируем команду
                 register(command);
@@ -60,7 +66,7 @@ public abstract class ModernRegistrar<T extends IPlugin<?>> implements IRegistry
             if(command instanceof CommandManager) commandManagers.put(commandClass, (CommandManager<T>) command);
         }
         //Бежимся по всем под командам
-
+//        System.out.println(subCommands);
         subCommands.forEach((cmd, manager) -> {
             if(!commandManagers.containsKey(manager)) {
                 plugin.logger().warning("Couldn't register sub command " + cmd.getClass() +": CommandManager not found");

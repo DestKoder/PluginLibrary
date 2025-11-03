@@ -134,7 +134,7 @@ public class LibraryMain extends MinecraftPlugin<LibraryMain, LibraryConfig> imp
         PlayerPointsEconomy ppEconomy = PlayerPointsEconomy.init(getServer());
 
         PermissionModule vaultPermissions = VaultPermissions.init(getServer());
-        PermissionModule luckPermsPermissions = LuckPermsPermissions.init(getServer());
+        PermissionModule luckPermsPermissions = getServer().getPluginManager().isPluginEnabled("LuckPerms")  ? LuckPermsPermissions.init(getServer()) : null;
 
         if(vaultEconomy != null){
             LibraryModules.registerModule(BukkitModules.VAULT_ECONOMY, vaultEconomy);

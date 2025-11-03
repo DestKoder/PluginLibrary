@@ -12,7 +12,6 @@
         <module>core</module>
         <module>bukkit</module>
         <module>velocity</module>
-        <module>database</module>
     </modules>
 
     <properties>
