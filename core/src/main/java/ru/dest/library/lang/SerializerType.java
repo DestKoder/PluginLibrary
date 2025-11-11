@@ -8,8 +8,15 @@ import ru.dest.library.lang.serializer.TTFSerializer;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+/**
+ * Types of available kyori serializers
+ * @since 1.0
+ * @author DestKoder
+ */
 public enum SerializerType {
-
+    /**
+     * Default '&' serializer
+     */
     LEGACY(() -> {
         ComponentSerializer<? extends Component, ? extends Component, String> serializer;
         try {
@@ -26,6 +33,9 @@ public enum SerializerType {
 
         return serializer;
     }),
+    /**
+     * Mini message format
+     */
     MINI_MESSAGE(() -> {
         ComponentSerializer<? extends Component, ? extends Component, String> serializer;
         try {
@@ -42,6 +52,9 @@ public enum SerializerType {
 
         return serializer;
     }),
+    /**
+     * Custom '&' serializer with support of click & hover events
+     */
     TTF(TTFSerializer::get);
     ;
     private final Supplier<ComponentSerializer<? extends Component, ? extends Component, String>> serializer;
